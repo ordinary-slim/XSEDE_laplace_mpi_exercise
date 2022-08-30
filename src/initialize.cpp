@@ -2,17 +2,11 @@
 #include <iostream>
 #include "global.h"
 
-void initialize (double **Tprev) {
+void initialize () {
   std::cout << __func__ <<  std::endl;
 
-  int i, j;
-
-  // Testing
-  std::cout << Tprev[0][0];
-
-  /*
-  for (int i = 0; i <= rows + 1; i++) {
-    for (j = 0; j <= cols; j++) {
+  for (int i = 0; i <= ROWS + 1; i++) {
+    for (int j = 0; j <= COLS; j++) {
       Tprev[i][j] = 0.0;
     }
   }
@@ -20,16 +14,15 @@ void initialize (double **Tprev) {
   // BCs
   // left  <- 0.0
   // right <- linear increase
-  for (i = 0; i <= rows+1; i++) {
+  for (int i = 0; i <= ROWS+1; i++) {
     Tprev[i][0] = 0.0;
-    Tprev[i][cols+1] = (100.0/rows)*i;
+    Tprev[i][COLS+1] = (100.0/ROWS)*i;
   }
 
   // top <- 0.0
   // bot <- linear increase
-  for (j = 0; j <= rows+1; j++) {
+  for (int j = 0; j <= ROWS+1; j++) {
     Tprev[0][j] = 0.0;
-    Tprev[rows+1][j] = (100.0/cols)*j;
+    Tprev[ROWS+1][j] = (100.0/COLS)*j;
   }
-  */
 }

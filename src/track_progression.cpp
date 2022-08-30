@@ -4,7 +4,7 @@
 void track_progresion(int iter){
 
   printf( "-- Iteration: %d --\n", iter);
-  for (int i = rows - 5; i <= rows; i++) {
+  for (int i = ROWS - 5; i <= ROWS; i++) {
     printf( "[%d, %d]: %5.2f ", i, i, T[i][i]);
   }
   printf("\n");
