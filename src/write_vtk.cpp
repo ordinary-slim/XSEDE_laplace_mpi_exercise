@@ -1,6 +1,7 @@
 #include "global.h"
 #include <iostream>
 #include <fstream>
+#include <string>
 
 using namespace std;
 
@@ -9,7 +10,8 @@ void write_vtk(int iter) {
   No need for inputs since solution is a global variable
   */
   ofstream outfile;
-  outfile.open ("out.vtk");
+  string fileName = "out_" + to_string(iter) + ".vtk";
+  outfile.open (fileName);
 
   // HEADER
   outfile << "# vtk DataFile Version 3.0\n";
@@ -29,7 +31,7 @@ void write_vtk(int iter) {
     }
   }
   //ATTRIBUTES (temperature field)
-  outfile << "POINTDATA " << (ROWS+2)*(COLS+2) << endl;
+  outfile << "POINT_DATA " << (ROWS+2)*(COLS+2) << endl;
   outfile << "SCALARS Temperature float 1\n";
   outfile << "LOOKUP_TABLE default\n";
   for (int i = 0; i < (ROWS+2); i++) {
@@ -39,4 +41,5 @@ void write_vtk(int iter) {
   }
 
   outfile.close();
+  cout << "Wrote " << fileName << endl;
 }

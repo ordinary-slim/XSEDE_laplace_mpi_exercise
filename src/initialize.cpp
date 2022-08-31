@@ -12,15 +12,13 @@ void initialize () {
   }
 
   // BCs
-  // left  <- 0.0
-  // right <- linear increase
+  // left  <- 0.0, right <- linear increase
   for (int i = 0; i <= ROWS+1; i++) {
     Tprev[i][0] = 0.0;
     Tprev[i][COLS+1] = (100.0/ROWS)*i;
   }
 
-  // top <- 0.0
-  // bot <- linear increase
+  // top <- 0.0, bot <- linear increase
   for (int j = 0; j <= ROWS+1; j++) {
     Tprev[0][j] = 0.0;
     Tprev[ROWS+1][j] = (100.0/COLS)*j;

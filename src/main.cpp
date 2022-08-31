@@ -5,7 +5,7 @@
 using namespace std;
 
 // Global variables definition; declaration in global.h
-extern const double maxError = 1e-3;
+extern const double maxError = 1e-2;
 extern const double maxIter = 4e3;
 
 double T[ROWSP2][COLSP2];
@@ -32,7 +32,7 @@ int main () {
     //MAIN
     for (int i = 1; i <= ROWS; i++){
       for (int j = 1; j <= COLS; j++){
-        T[i][j] = 0.25 * (Tprev[i+1][j] + Tprev[i-1][j] + Tprev[i][j+1] + Tprev[i+1][j-1]);
+        T[i][j] = 0.25 * (Tprev[i+1][j] + Tprev[i-1][j] + Tprev[i][j+1] + Tprev[i][j-1]);
       }
     }
 
@@ -47,15 +47,15 @@ int main () {
 
     //PRINT
     if (iter % 100 == 0) {
+      printf("Current error: %.6f", currError);
       track_progresion(iter);
-      write_vtk(iter);
-      cout << "Wrote out.vtk" << endl;
     }
 
     iter++;
   }
 
   // pretty print
+  write_vtk(iter);
   printf("Converged in %d iters\n", iter);
   printf("Final error estimate= %.5f\n", currError);
 }
