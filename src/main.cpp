@@ -15,6 +15,7 @@ double Tprev[ROWSP2][COLSP2];
 //Declarations
 void initialize();
 void track_progresion(int iter);
+void write_vtk(int);
 
 
 int main () {
@@ -47,6 +48,8 @@ int main () {
     //PRINT
     if (iter % 100 == 0) {
       track_progresion(iter);
+      write_vtk(iter);
+      cout << "Wrote out.vtk" << endl;
     }
 
     iter++;
