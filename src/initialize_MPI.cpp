@@ -13,7 +13,7 @@ void initialize_mpi(int &world_size, int &world_rank) {
 
   // Print off a hello world message
   if (world_rank==0){
-    printf("Launched job on %d processors.", world_size);
+    printf("Launched job on %d processors.\n", world_size);
   }
 
 }

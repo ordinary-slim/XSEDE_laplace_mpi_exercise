@@ -20,8 +20,14 @@ int main () {
 
   initialize_mpi(world_size, world_rank);
 
-  double T[ROWS+2][COLS+2];//Beware of stack-overflow
-  double Tprev[ROWS+2][COLS+2];
+  //Compute number of rows per processor
+  int rowsPerProc = (ROWS+2) / world_size;
+  if (world_rank==world_size-1) {
+    rowsPerProc = (ROWS+2) - rowsPerProc*(world_size-1);
+  }
+
+  double T[rowsPerProc+2][COLS+2];//Beware of stack-overflow
+  double Tprev[rowsPerProc+2][COLS+2];
 
 
   //INITIAL CONDITION
