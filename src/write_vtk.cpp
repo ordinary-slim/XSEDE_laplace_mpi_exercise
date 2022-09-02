@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <math.h>
 
 using namespace std;
 
@@ -36,7 +37,7 @@ void write_vtk(double (*T)[COLS+2], int iter) {
   outfile << "LOOKUP_TABLE default\n";
   for (int i = 0; i < (ROWS+2); i++) {
     for (int j = COLS+1; j >= 0 ; j--) {
-      outfile << T[i][j] << endl;
+      outfile << round(T[i][j]*1e5) / 1e5 << endl;
     }
   }
 
