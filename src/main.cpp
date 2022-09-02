@@ -10,22 +10,30 @@ extern const double maxIter = 4e3;
 
 //Declarations
 void initialize (double (*Tinit)[COLS+2]);
+void initialize_mpi(int &world_size, int &world_rank);
 void track_progresion(double (*T)[COLS+2], int iter);
 void write_vtk(double (*T)[COLS+2], int iter);
 
+int world_size, world_rank;
 
 int main () {
 
-  double T[ROWS+2][COLS+2];
+  initialize_mpi(world_size, world_rank);
+
+  double T[ROWS+2][COLS+2];//Beware of stack-overflow
   double Tprev[ROWS+2][COLS+2];
+
+
+  //INITIAL CONDITION
+  initialize(Tprev);
+  for (int i = 0; i < ROWS+2; i++) {
+    for (int j = 0; j < COLS+2; j++) {
+      T[i][j] = Tprev[i][j];
+    }
+  }
 
   double currError = 100;
   int iter = 0;
-
-  // initialize Tprev
-  initialize(Tprev);
-
-  cout << T[0][0] << endl;
   while ( currError > maxError && iter < maxIter ) {
 
     //MAIN
@@ -57,4 +65,7 @@ int main () {
   write_vtk(T, iter);
   printf("Converged in %d iters\n", iter);
   printf("Final error estimate= %.5f\n", currError);
+
+  //Finalize MPI
+  MPI_Finalize();
 }

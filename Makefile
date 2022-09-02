@@ -24,7 +24,7 @@ release: $(BUILD_DIR)/$(TARGET_EXEC)
 
 test:
 	@echo "\n\n\nRunning program...\n"
-	$(BUILD_DIR)/main
+	mpirun -n 2 $(BUILD_DIR)/main
 
 clean:
 	$(RM) -r $(BUILD_DIR)

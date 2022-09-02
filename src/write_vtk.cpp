@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void write_vtk(double (*T)[COLS+2], int iter) {
+void write_vtk(double (*Tout)[COLS+2], int iter) {
   /* Write legacy vtk for postprocessing
   No need for inputs since solution is a global variable
   */
@@ -37,7 +37,7 @@ void write_vtk(double (*T)[COLS+2], int iter) {
   outfile << "LOOKUP_TABLE default\n";
   for (int i = 0; i < (ROWS+2); i++) {
     for (int j = COLS+1; j >= 0 ; j--) {
-      outfile << round(T[i][j]*1e5) / 1e5 << endl;
+      outfile << round(Tout[i][j]*1e5) / 1e5 << endl;
     }
   }
 
