@@ -8,25 +8,24 @@ using namespace std;
 extern const double maxError = 1e-2;
 extern const double maxIter = 4e3;
 
-double T[ROWSP2][COLSP2];
-double Tprev[ROWSP2][COLSP2];
-
-
 //Declarations
-void initialize();
-void track_progresion(int iter);
-void write_vtk(int);
+void initialize (double (*Tinit)[COLS+2]);
+void track_progresion(double (*T)[COLS+2], int iter);
+void write_vtk(double (*T)[COLS+2], int iter);
 
 
 int main () {
 
+  double T[ROWS+2][COLS+2];
+  double Tprev[ROWS+2][COLS+2];
 
   double currError = 100;
   int iter = 0;
 
   // initialize Tprev
-  initialize();
+  initialize(Tprev);
 
+  cout << T[0][0] << endl;
   while ( currError > maxError && iter < maxIter ) {
 
     //MAIN
@@ -48,14 +47,14 @@ int main () {
     //PRINT
     if (iter % 100 == 0) {
       printf("Current error: %.6f", currError);
-      track_progresion(iter);
+      track_progresion(T, iter);
     }
 
     iter++;
   }
 
   // pretty print
-  write_vtk(iter);
+  write_vtk(T, iter);
   printf("Converged in %d iters\n", iter);
   printf("Final error estimate= %.5f\n", currError);
 }

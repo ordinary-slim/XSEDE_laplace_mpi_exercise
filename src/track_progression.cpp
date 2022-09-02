@@ -1,7 +1,7 @@
 #include <iostream>
 #include "global.h"
 
-void track_progresion(int iter){
+void track_progresion(double (*T)[COLS+2], int iter){
 
   printf( "-- Iteration: %d --\n", iter);
   for (int i = ROWS - 5; i <= ROWS; i++) {

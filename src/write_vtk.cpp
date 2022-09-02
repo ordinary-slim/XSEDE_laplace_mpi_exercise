@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void write_vtk(int iter) {
+void write_vtk(double (*T)[COLS+2], int iter) {
   /* Write legacy vtk for postprocessing
   No need for inputs since solution is a global variable
   */
@@ -22,7 +22,7 @@ void write_vtk(int iter) {
 
   //TOPOLOGY
   outfile << "DATASET STRUCTURED_GRID\n";
-  outfile << "DIMENSIONS " << ROWSP2 << " " << COLSP2 << " " << "1\n";
+  outfile << "DIMENSIONS " << ROWS+2 << " " << COLS+2 << " " << "1\n";
   outfile << "POINTS " << (ROWS+2)*(COLS+2) << " float\n";
   //assuming domain is 1x1
   for (int i = 0; i < (ROWS+2); i++) {
@@ -35,7 +35,7 @@ void write_vtk(int iter) {
   outfile << "SCALARS Temperature float 1\n";
   outfile << "LOOKUP_TABLE default\n";
   for (int i = 0; i < (ROWS+2); i++) {
-    for (int j = 0; j < (COLS+2); j++) {
+    for (int j = COLS+1; j >= 0 ; j--) {
       outfile << T[i][j] << endl;
     }
   }
