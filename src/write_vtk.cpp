@@ -27,17 +27,17 @@ void write_vtk(double (*Tout)[COLS+2], map<int,int> local2global) {
   outfile << "DIMENSIONS " << local2global.size() << " " << COLS+2 << " " << "1\n";
   outfile << "POINTS " << local2global.size()*(COLS+2) << " float\n";
   //assuming domain is 1x1
-  for (auto& i : local2global) {
-    for (int j = 0; j < (COLS+2); j++) {
-      outfile << static_cast<float>(i.second)/(ROWS+2) << " " << static_cast<float>(j)/(COLS+2) << " 0.0\n";
+  for (int j = 0; j < (COLS+2); j++) {
+    for (auto& i : local2global) {
+      outfile << static_cast<float>(j)/(COLS+1) << " " << (2 - 2*static_cast<float>(i.second)/(ROWS+1)) << " 0.0\n";
     }
   }
   //ATTRIBUTES (temperature field)
   outfile << "POINT_DATA " << local2global.size()*(COLS+2) << endl;
   outfile << "SCALARS Temperature float 1\n";
   outfile << "LOOKUP_TABLE default\n";
-  for (auto& i : local2global) {
-    for (int j = COLS+1; j >= 0 ; j--) {
+  for (int j = 0; j < (COLS+2); j++) {
+    for (auto& i : local2global) {
       outfile << round(Tout[i.first][j]*1e5) / 1e5 << endl;
     }
   }

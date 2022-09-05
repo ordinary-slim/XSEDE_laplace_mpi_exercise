@@ -44,6 +44,9 @@ int main () {
       counter++;
     }
   }
+  for (auto& t : local2global) {
+    printf("local = %d; global = %d\n", t.first, t.second);
+  }
   //Allocate solution with space for ghost rows
   double T[local2global.size()+2][COLS+2];
   double Tprev[local2global.size()+2][COLS+2];

@@ -24,14 +24,14 @@ void initialize (double (*Tinit)[COLS+2], map<int,int> local2global) {
   // top <- 0.0
   if (world_rank==0) {
     for (int j = 0; j < COLS+2; j++) {
-      Tinit[0][j] = 0.0;
+      Tinit[1][j] = 0.0;
     }
   }
 
   // bot <- linear increase
   if (world_rank==world_size-1) {
     for (int j = 0; j < COLS+2; j++) {
-      Tinit[local2global.size()+1][j] = (100.0/COLS)*j;
+      Tinit[local2global.size()][j] = (100.0/COLS)*j;
     }
   }
 }
