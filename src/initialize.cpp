@@ -8,9 +8,9 @@ using namespace std;
 void initialize (double (*Tinit)[COLS+2], map<int,int> local2global) {
   std::cout << __func__ <<  std::endl;
 
-  for (auto& i : local2global) {
-    for (int j = 0; j <= COLS; j++) {
-      Tinit[i.first][j] = 0.0;
+  for (int i = 0; i < local2global.size()+2; i++) {
+    for (int j = 0; j < COLS+2; j++) {
+      Tinit[i][j] = 0.0;
     }
   }
 
@@ -31,7 +31,7 @@ void initialize (double (*Tinit)[COLS+2], map<int,int> local2global) {
   // bot <- linear increase
   if (world_rank==world_size-1) {
     for (int j = 0; j < COLS+2; j++) {
-      Tinit[local2global.size()][j] = (100.0/COLS)*j;
+      Tinit[local2global.size()+1][j] = (100.0/COLS)*j;
     }
   }
 }

@@ -51,7 +51,7 @@ int main () {
   //INITIAL CONDITION
   initialize(Tprev, local2global);
   //copy initial condition to solution array
-  for (int i = 0; i < local2global.size(); i++) {
+  for (int i = 0; i < local2global.size()+2; i++) {
     for (int j = 0; j < COLS+2; j++) {
       T[i][j] = Tprev[i][j];
     }
