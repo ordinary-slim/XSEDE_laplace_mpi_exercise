@@ -23,6 +23,7 @@ default: release test
 release: $(BUILD_DIR)/$(TARGET_EXEC)
 
 test:
+	$(MKDIR_P) "post"
 	@echo "\n\n\nRunning program...\n"
 	mpirun -n 2 $(BUILD_DIR)/main
 
