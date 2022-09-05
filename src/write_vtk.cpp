@@ -29,7 +29,7 @@ void write_vtk(double (*Tout)[COLS+2], map<int,int> local2global) {
   //assuming domain is 1x1
   for (int j = 0; j < (COLS+2); j++) {
     for (auto& i : local2global) {
-      outfile << static_cast<float>(j)/(COLS+1) << " " << (2 - 2*static_cast<float>(i.second)/(ROWS+1)) << " 0.0\n";
+      outfile << static_cast<float>(j)/(COLS+1) << " " << (1 - static_cast<float>(i.second)/(ROWS+1)) << " 0.0\n";
     }
   }
   //ATTRIBUTES (temperature field)

@@ -7,7 +7,7 @@ using namespace std;
 
 // Global variables definition; declaration in global.h
 extern const double maxError = 1e-2;
-extern const double maxIter = 4e3;
+extern const double maxIter = 4000;
 int world_size, world_rank;
 
 //Declarations
@@ -44,9 +44,6 @@ int main () {
       counter++;
     }
   }
-  for (auto& t : local2global) {
-    printf("local = %d; global = %d\n", t.first, t.second);
-  }
   //Allocate solution with space for ghost rows
   double T[local2global.size()+2][COLS+2];
   double Tprev[local2global.size()+2][COLS+2];
@@ -60,7 +57,61 @@ int main () {
     }
   }
 
+  double localError = 100;
+  double globalError = 999;
+  int iter = 0;
+  // MAIN LOOP
+  while ( globalError > maxError && iter < maxIter ) {
+    //COMMUNICATE GHOST ROWS
+    int up = world_rank - 1;
+    int down = world_rank + 1;
+    //Downward
+    if (world_rank != (world_size-1)) {
+      MPI_Send(Tprev[local2global.size()], COLS+2, MPI_DOUBLE, down, 0, MPI_COMM_WORLD);
+    }
+    if (world_rank != 0) {
+      MPI_Recv(Tprev[0], COLS+2, MPI_DOUBLE, up, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
+    //Upwards
+    if (world_rank != 0) {
+      MPI_Send(Tprev[1], COLS+2, MPI_DOUBLE, up, 0, MPI_COMM_WORLD);
+    }
+    if (world_rank != (world_size-1)) {
+      MPI_Recv(Tprev[local2global.size()+1], COLS+2, MPI_DOUBLE, down, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
+
+    //COMPUTATION
+    for (auto& pair: local2global) {
+      for (int j = 1; j <= COLS; j++){
+        int locRow = pair.first;
+        T[locRow][j] = 0.25 * (Tprev[locRow+1][j] + Tprev[locRow-1][j] + Tprev[locRow][j+1] + Tprev[locRow][j-1]);
+      }
+    }
+
+    localError = 0.0;
+    //CHECK CONVERGENCE
+    for (auto& pair: local2global) {
+      for (int j = 1; j <= COLS; j++){
+        int locRow = pair.first;
+        localError   = max( localError, abs(T[locRow][j] - Tprev[locRow][j] ));
+        Tprev[locRow][j] = T[locRow][j];
+      }
+    }
+    MPI_Reduce( &localError, &globalError, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+    MPI_Bcast( &globalError, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+    //PRETTY PRINT
+    if (world_rank==0){
+      if (iter % 100 == 0) {
+        printf("proc %d, iter %d, loc error %.5f, globalError: %.5f\n", world_rank, iter, localError, globalError);
+        //track_progresion(T, iter);
+      }
+    }
+
+    iter++;
+  }
   // POST
+  printf("Exited after %d iters.\n", iter);
   write_vtk(T, local2global);
 
   //Finalize MPI
