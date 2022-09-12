@@ -13,11 +13,10 @@ void initialize (double (*Tinit)[COLS+2]);
 void track_progresion(double (*T)[COLS+2], int iter);
 void write_vtk(double (*T)[COLS+2], int iter);
 
+double T[ROWS+2][COLS+2];
+double Tprev[ROWS+2][COLS+2];
 
 int main () {
-
-  double T[ROWS+2][COLS+2];
-  double Tprev[ROWS+2][COLS+2];
 
   double currError = 100;
   int iter = 0;
