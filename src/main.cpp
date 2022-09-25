@@ -37,9 +37,10 @@ int main () {
   //BCAST row partition
   MPI_Bcast(rPart, ROWS+2, MPI_INT, 0, MPI_COMM_WORLD);
   //Build local2global mapping in ea process
-  //Could do it in two loops with pure arrays or in 1 loop with dynamic arrays
+  //Mapping only takes into account local data
+  //First and last row are ghost rows, m
   map<int, int> local2global;
-  int counter = 0;
+  int counter = 1;
   for (int i = 0; i < ROWS + 2; i++) {
     if (rPart[i] == world_rank) {
       local2global[counter] = i;
