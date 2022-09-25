@@ -13,6 +13,8 @@ INC_DIRS := $(shell find $(SRC_DIRS) -type d)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
 CPPFLAGS ?= $(INC_FLAGS) -MMD -MP
+debug: CPPFLAGS += -g
+debug: LDFLAGS += -g
 
 MKDIR_P ?= mkdir -p
 
@@ -21,6 +23,7 @@ MKDIR_P ?= mkdir -p
 default: release test
 
 release: $(BUILD_DIR)/$(TARGET_EXEC)
+debug: $(BUILD_DIR)/$(TARGET_EXEC)
 
 test:
 	$(MKDIR_P) "post"
