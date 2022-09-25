@@ -60,6 +60,7 @@ int main () {
   double localError = 100;
   double globalError = 999;
   int iter = 0;
+  int locRow, glbRow;
   // MAIN LOOP
   while ( globalError > maxError && iter < maxIter ) {
     //COMMUNICATE GHOST ROWS
@@ -81,24 +82,25 @@ int main () {
     }
 
     //COMPUTATION
-    for (auto& pair: local2global) {
+    for (auto& rowMap: local2global) {
+      locRow = rowMap.first;
+      glbRow = rowMap.first;
+      if ((glbRow == 0)||(glbRow == ROWS+1)) { continue; }// skip BC rows
       for (int j = 1; j <= COLS; j++){
-        int locRow = pair.first;
         T[locRow][j] = 0.25 * (Tprev[locRow+1][j] + Tprev[locRow-1][j] + Tprev[locRow][j+1] + Tprev[locRow][j-1]);
       }
     }
 
     localError = 0.0;
     //CHECK CONVERGENCE
-    for (auto& pair: local2global) {
+    for (auto& rowMap: local2global) {
       for (int j = 1; j <= COLS; j++){
-        int locRow = pair.first;
+        locRow = rowMap.first;
         localError   = max( localError, abs(T[locRow][j] - Tprev[locRow][j] ));
         Tprev[locRow][j] = T[locRow][j];
       }
     }
-    MPI_Reduce( &localError, &globalError, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-    MPI_Bcast( &globalError, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Allreduce( &localError, &globalError, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
 
     //PRETTY PRINT
     if (world_rank==0){
