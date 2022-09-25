@@ -17,7 +17,6 @@ void prettyPrint (int itask, double (*Tout)[COLS+2], map<int,int> local2global) 
             cout << endl;
           }
         }
-        MPI_Barrier(MPI_COMM_WORLD);
       }
       break;
     default://print local+ghost data of proc given by itask
@@ -30,7 +29,7 @@ void prettyPrint (int itask, double (*Tout)[COLS+2], map<int,int> local2global) 
             cout << endl;
           }
       }
-      MPI_Barrier(MPI_COMM_WORLD);
       break;
   }
+  MPI_Barrier(MPI_COMM_WORLD);
 }

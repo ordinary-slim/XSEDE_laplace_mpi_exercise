@@ -60,6 +60,9 @@ int main () {
   double T[local2global.size()+2][COLS+2];
   double Tprev[local2global.size()+2][COLS+2];
 
+  std::set<int> BC_Rows = {0, ROWS+1};
+  std::set<int> BC_Cols = {0, COLS+1};
+
   //INITIAL CONDITION
   initialize(Tprev, local2global);
   //copy initial condition to solution array
@@ -96,25 +99,20 @@ int main () {
     if (world_rank != (world_size-1)) {
       MPI_Recv(T[local2global.size()+1], COLS+2, MPI_DOUBLE, down, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
-    MPI_Barrier(MPI_COMM_WORLD);
     for (int proc = 0; proc < world_size; proc++ ) {
+      MPI_Barrier(MPI_COMM_WORLD);
       prettyPrint( proc, T,local2global); 
     }
 
 
     //COMPUTATION
-
-    std::set<int> wrongVals = {0, ROWS+1};
-    for (auto& pair: local2global) {
-      int locRow = pair.first;
-      int glbRow = pair.second;
-      printf("row %d\n", glbRow );
-      bool wrongRow = wrongVals.find( glbRow ) != wrongVals.end();
-      if (wrongRow ) { printf("Row %d should not be touched!\n", glbRow); }
+    int locRow, glbRow;
+    for (auto& rowMap: local2global) {
+      locRow = rowMap.first;
+      glbRow = rowMap.second;
+      if (BC_Rows.find( glbRow ) != BC_Rows.end()) { continue; }
       for (int j = 1; j < COLS+1; j++){
         T[locRow][j] = 0.25 * (Tprev[locRow+1][j] + Tprev[locRow-1][j] + Tprev[locRow][j+1] + Tprev[locRow][j-1]);
-        bool wrongCol = wrongVals.find( j ) != wrongVals.end();
-        if (wrongCol ) { printf("Wrong COL!\n"); }
       }
     }
 
