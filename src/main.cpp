@@ -2,12 +2,13 @@
 #include "global.h"
 #include <iostream>
 #include <map>
+#include <set>
 
 using namespace std;
 
 // Global variables definition; declaration in global.h
 extern const double maxError = 1e-2;
-extern const double maxIter = 4000;
+extern const double maxIter = 2;
 int world_size, world_rank;
 
 //Declarations
@@ -15,6 +16,7 @@ void initialize (double (*Tinit)[COLS+2], map<int,int>);
 void initialize_mpi(int &world_size, int &world_rank);
 void track_progresion(double (*T)[COLS+2], int iter);
 void write_vtk(double (*T)[COLS+2], map<int,int>);
+void prettyPrint (int itask, double (*Tout)[COLS+2], map<int,int> local2global);
 
 int main () {
 
@@ -34,7 +36,7 @@ int main () {
   }
   //BCAST row partition
   MPI_Bcast(rPart, ROWS+2, MPI_INT, 0, MPI_COMM_WORLD);
-  //Build local2global mapping in ea partition
+  //Build local2global mapping in ea process
   //Could do it in two loops with pure arrays or in 1 loop with dynamic arrays
   map<int, int> local2global;
   int counter = 1;
@@ -44,6 +46,15 @@ int main () {
       counter++;
     }
   }
+  for (int proc = 0; proc < world_size; proc++) {
+    MPI_Barrier(MPI_COMM_WORLD);
+    if (world_rank==proc){
+      for (auto& Map: local2global) {
+        printf( "%d -----> %d\n", Map.first, Map.second );
+      }
+    }
+  }
+  MPI_Barrier(MPI_COMM_WORLD);
   //Allocate solution with space for ghost rows
   double T[local2global.size()+2][COLS+2];
   double Tprev[local2global.size()+2][COLS+2];
@@ -57,11 +68,16 @@ int main () {
     }
   }
 
-  double localError = 100;
+  if (world_rank==0) { printf("Printing T\n");}
+  MPI_Barrier(MPI_COMM_WORLD);
+  prettyPrint( -1, T,local2global); 
+
+  double localError = 999;
   double globalError = 999;
+  double myError = 0.0;
   int iter = 0;
   // MAIN LOOP
-  while ( globalError > maxError && iter < maxIter ) {
+  while ( iter < maxIter ) {
     //COMMUNICATE GHOST ROWS
     int up = world_rank - 1;
     int down = world_rank + 1;
@@ -79,31 +95,51 @@ int main () {
     if (world_rank != (world_size-1)) {
       MPI_Recv(T[local2global.size()+1], COLS+2, MPI_DOUBLE, down, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
+    MPI_Barrier(MPI_COMM_WORLD);
+    for (int proc = 0; proc < world_size; proc++ ) {
+      prettyPrint( proc, T,local2global); 
+    }
+
 
     //COMPUTATION
+
+    std::set<int> wrongVals = {0, ROWS+1};
     for (auto& pair: local2global) {
-      for (int j = 1; j <= COLS; j++){
-        int locRow = pair.first;
+      int locRow = pair.first;
+      int glbRow = pair.second;
+      printf("row %d\n", glbRow );
+      bool wrongRow = wrongVals.find( glbRow ) != wrongVals.end();
+      if (wrongRow ) { printf("Row %d should not be touched!\n", glbRow); }
+      for (int j = 1; j < COLS+1; j++){
         T[locRow][j] = 0.25 * (Tprev[locRow+1][j] + Tprev[locRow-1][j] + Tprev[locRow][j+1] + Tprev[locRow][j-1]);
+        bool wrongCol = wrongVals.find( j ) != wrongVals.end();
+        if (wrongCol ) { printf("Wrong COL!\n"); }
       }
     }
 
     localError = 0.0;
+    if (world_rank==2){
+      myError = abs(T[250][900] - Tprev[250][900]);
+    }
     //CHECK CONVERGENCE
     for (auto& pair: local2global) {
-      for (int j = 1; j <= COLS; j++){
+      for (int j = 1; j < COLS+1; j++){
         int locRow = pair.first;
         localError   = max( localError, abs(T[locRow][j] - Tprev[locRow][j] ));
         Tprev[locRow][j] = T[locRow][j];
       }
     }
-    MPI_Reduce( &localError, &globalError, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+    MPI_Reduce( &localError, &globalError, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);//switch to all reduce?
     MPI_Bcast( &globalError, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
     //PRETTY PRINT
-    if (world_rank==0){
-      if (iter % 100 == 0) {
+    if (iter % 100 == 0) {
+      if (world_rank==0){
         printf("proc %d, iter %d, loc error %.5f, globalError: %.5f\n", world_rank, iter, localError, globalError);
+        //track_progresion(T, iter);
+      }
+      if (world_rank==2){
+        printf("iter %d, T[750][900]= %f, myError: %f, globalError: %.5f\n", iter, T[250][900], myError, globalError);
         //track_progresion(T, iter);
       }
     }

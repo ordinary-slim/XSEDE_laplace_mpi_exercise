@@ -1,8 +1,8 @@
 #ifndef global_included
 #define global_included
 
-#define ROWS 1000
-#define COLS 1000
+#define ROWS 6
+#define COLS 6
 
 extern const double maxError;
 extern const double maxIter;

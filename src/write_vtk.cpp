@@ -17,10 +17,6 @@ void write_vtk(double (*Tout)[COLS+2], map<int,int> local2global) {
   int partitionSize = local2global.size();
   local2global[0] = local2global[1] - 1;
   local2global[partitionSize+1] = local2global[partitionSize] + 1;
-  for (auto& i : local2global ) {
-    printf("%d: %d ----> %d\n", world_rank, i.first, i.second);
-  }
-
 
   // HEADER
   outfile << "# vtk DataFile Version 3.0\n";
