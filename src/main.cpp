@@ -8,7 +8,7 @@ using namespace std;
 
 // Global variables definition; declaration in global.h
 extern const double maxError = 1e-2;
-extern const double maxIter = 2;
+extern const double maxIter = 1;
 int world_size, world_rank;
 
 //Declarations
@@ -39,7 +39,7 @@ int main () {
   //Build local2global mapping in ea process
   //Could do it in two loops with pure arrays or in 1 loop with dynamic arrays
   map<int, int> local2global;
-  int counter = 1;
+  int counter = 0;
   for (int i = 0; i < ROWS + 2; i++) {
     if (rPart[i] == world_rank) {
       local2global[counter] = i;
