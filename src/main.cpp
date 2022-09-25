@@ -80,6 +80,7 @@ int main () {
   double globalError = 999;
   double myError = 0.0;
   int iter = 0;
+  int locRow, glbRow;
   // MAIN LOOP
   while ( iter < maxIter ) {
     //COMMUNICATE GHOST ROWS
@@ -106,12 +107,11 @@ int main () {
 
 
     //COMPUTATION
-    int locRow, glbRow;
     for (auto& rowMap: local2global) {
       locRow = rowMap.first;
-      glbRow = rowMap.second;
-      if (BC_Rows.find( glbRow ) != BC_Rows.end()) { continue; }
-      for (int j = 1; j < COLS+1; j++){
+      glbRow = rowMap.first;
+      if ((glbRow == 0)||(glbRow == ROWS+1)) { continue; }// skip BC rows
+      for (int j = 1; j <= COLS; j++){
         T[locRow][j] = 0.25 * (Tprev[locRow+1][j] + Tprev[locRow-1][j] + Tprev[locRow][j+1] + Tprev[locRow][j-1]);
       }
     }
@@ -121,15 +121,14 @@ int main () {
       myError = abs(T[250][900] - Tprev[250][900]);
     }
     //CHECK CONVERGENCE
-    for (auto& pair: local2global) {
-      for (int j = 1; j < COLS+1; j++){
-        int locRow = pair.first;
+    for (auto& rowMap: local2global) {
+      for (int j = 1; j <= COLS; j++){
+        locRow = rowMap.first;
         localError   = max( localError, abs(T[locRow][j] - Tprev[locRow][j] ));
         Tprev[locRow][j] = T[locRow][j];
       }
     }
-    MPI_Reduce( &localError, &globalError, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);//switch to all reduce?
-    MPI_Bcast( &globalError, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Allreduce( &localError, &globalError, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
 
     //PRETTY PRINT
     if (iter % 100 == 0) {
