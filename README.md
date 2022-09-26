@@ -1,12 +1,26 @@
-Checkpoints
-===========
+## Description
+
+Parallel implementation (MPI) of a finite difference solution of
+Laplace problem over the unit square. Boundary conditions are:
+
+- Left & top: $T = 0$
+- Bottom: $T = 100 / x$
+- Right: $T = 100 / y$
+
+Exercise is proposed by [this YouTube video](https://www.youtube.com/watch?v=SSloT4nd9fU).
+
+![partition](https://user-images.githubusercontent.com/55497778/192350116-51c2b8ba-cf3f-485c-abeb-54b1c9a096a9.png)
+![T_field](https://user-images.githubusercontent.com/55497778/192350118-1af0bba2-0a9f-4801-a890-9c66e041e1b8.png)
+
+## Developper notes
+
+### Checkpoints
 
 - [x] Parallel version runs correctly
 - [x] Parallel version runs
 - [x] Serial version runs correctly
 
-TODO
-====
+### TODO
 
 - [ ] // vtk
 - [x] Ghost cell information communication
