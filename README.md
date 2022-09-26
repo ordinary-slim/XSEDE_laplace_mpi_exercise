@@ -9,8 +9,12 @@ Laplace problem over the unit square. Boundary conditions are:
 
 Exercise is proposed by [this YouTube video](https://www.youtube.com/watch?v=SSloT4nd9fU).
 
-![partition](https://user-images.githubusercontent.com/55497778/192350116-51c2b8ba-cf3f-485c-abeb-54b1c9a096a9.png)
-![T_field](https://user-images.githubusercontent.com/55497778/192350118-1af0bba2-0a9f-4801-a890-9c66e041e1b8.png)
+#### Solution using 20 CPUS
+
+Partition           |  Temperature field
+:-------------------------:|:-------------------------:
+<img src="https://user-images.githubusercontent.com/55497778/192350116-51c2b8ba-cf3f-485c-abeb-54b1c9a096a9.png" style="background-color: white;">  |  <img src="https://user-images.githubusercontent.com/55497778/192350118-1af0bba2-0a9f-4801-a890-9c66e041e1b8.png" style="background-color: white;">
+
 
 ## Developper notes
 
@@ -22,6 +26,7 @@ Exercise is proposed by [this YouTube video](https://www.youtube.com/watch?v=SSl
 
 ### TODO
 
+- [ ] Add strong scaling plot
 - [ ] // vtk
 - [x] Ghost cell information communication
 - [x] Parallelization game-plan
