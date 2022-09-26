@@ -3,6 +3,7 @@
 #include <iostream>
 #include <map>
 #include <ctime>
+#include <sys/resource.h>
 
 using namespace std;
 
@@ -18,6 +19,22 @@ void track_progresion(double (*T)[COLS+2], int iter);
 void write_vtk(double (*T)[COLS+2], map<int,int>);
 
 int main () {
+  const rlim_t kStackSize = 16 * 1024 * 1024;   // min stack size = 16 MB
+  struct rlimit rl;
+  int result;
+
+  result = getrlimit(RLIMIT_STACK, &rl);
+  if (result == 0) {
+      if (rl.rlim_cur < kStackSize)
+      {
+          rl.rlim_cur = kStackSize;
+          result = setrlimit(RLIMIT_STACK, &rl);
+          if (result != 0)
+          {
+              fprintf(stderr, "setrlimit returned result = %d\n", result);
+          }
+      }
+  }
   initialize_mpi(world_size, world_rank);
   clock_t cStart, cEnd;
   if (world_rank==0) { cStart = clock();}
