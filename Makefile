@@ -33,7 +33,10 @@ test:
 clean:
 	$(RM) -r $(BUILD_DIR)
 
-$(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
+post:
+	$(MKDIR_P) $@
+
+$(BUILD_DIR)/$(TARGET_EXEC): $(OBJS) post
 	$(CC) $(OBJS) -o $@ $(LDFLAGS)
 
 # c++ source
