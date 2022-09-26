@@ -2,6 +2,7 @@
 #include "global.h"
 #include <iostream>
 #include <map>
+#include <ctime>
 
 using namespace std;
 
@@ -17,8 +18,9 @@ void track_progresion(double (*T)[COLS+2], int iter);
 void write_vtk(double (*T)[COLS+2], map<int,int>);
 
 int main () {
-
   initialize_mpi(world_size, world_rank);
+  clock_t cStart, cEnd;
+  if (world_rank==0) { cStart = clock();}
 
   //Build row partition in proc 0
   //Similar to calling a partitionner at rank 0
@@ -114,8 +116,13 @@ int main () {
 
     iter++;
   }
-  // POST
-  printf("Exited after %d iters.\n", iter);
+  // RUN SUMMARY & POST
+  if (world_rank==0) {
+    cEnd = clock();
+    printf("Exited after %d iters.\n", iter);
+    long double timeElapsed = (cEnd - cStart) / (long double)CLOCKS_PER_SEC;
+    cout << "Time elapsed [s]: " << timeElapsed << endl;
+  }
   write_vtk(T, local2global);
 
   //Finalize MPI
