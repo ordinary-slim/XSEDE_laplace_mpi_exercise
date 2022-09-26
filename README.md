@@ -1,7 +1,7 @@
 Checkpoints
 ===========
 
-- [ ] Parallel version runs correctly
+- [x] Parallel version runs correctly
 - [x] Parallel version runs
 - [x] Serial version runs correctly
 
