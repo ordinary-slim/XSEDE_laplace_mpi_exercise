@@ -14,9 +14,11 @@ void write_vtk(double (*Tout)[COLS+2], map<int,int> local2global) {
   outfile.open (fileName);
 
   //Extend local2global mapping (for postprocessing only)
+  /*
   int partitionSize = local2global.size();
   local2global[0] = local2global[1] - 1;
   local2global[partitionSize+1] = local2global[partitionSize] + 1;
+  */
 
   // HEADER
   outfile << "# vtk DataFile Version 3.0\n";

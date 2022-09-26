@@ -69,17 +69,17 @@ int main () {
     if (world_size>1) {
       //Downward
       if (world_rank != (world_size-1)) {
-        MPI_Send(T[local2global.size()], COLS+2, MPI_DOUBLE, down, 0, MPI_COMM_WORLD);
+        MPI_Send(Tprev[local2global.size()], COLS+2, MPI_DOUBLE, down, 0, MPI_COMM_WORLD);
       }
       if (world_rank != 0) {
-        MPI_Recv(T[0], COLS+2, MPI_DOUBLE, up, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(Tprev[0], COLS+2, MPI_DOUBLE, up, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
       }
       //Upwards
       if (world_rank != 0) {
-        MPI_Send(T[1], COLS+2, MPI_DOUBLE, up, 0, MPI_COMM_WORLD);
+        MPI_Send(Tprev[1], COLS+2, MPI_DOUBLE, up, 0, MPI_COMM_WORLD);
       }
       if (world_rank != (world_size-1)) {
-        MPI_Recv(T[local2global.size()+1], COLS+2, MPI_DOUBLE, down, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(Tprev[local2global.size()+1], COLS+2, MPI_DOUBLE, down, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
       }
     }
 
