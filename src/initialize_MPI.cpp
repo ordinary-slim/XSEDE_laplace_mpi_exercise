@@ -1,4 +1,5 @@
 #include <mpi.h>
+#include <iostream>
 
 void initialize_mpi(int &world_size, int &world_rank) {
 
