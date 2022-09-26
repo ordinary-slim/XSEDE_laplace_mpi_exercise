@@ -66,25 +66,27 @@ int main () {
     //COMMUNICATE GHOST ROWS
     int up = world_rank - 1;
     int down = world_rank + 1;
-    //Downward
-    if (world_rank != (world_size-1)) {
-      MPI_Send(T[local2global.size()], COLS+2, MPI_DOUBLE, down, 0, MPI_COMM_WORLD);
-    }
-    if (world_rank != 0) {
-      MPI_Recv(T[0], COLS+2, MPI_DOUBLE, up, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    }
-    //Upwards
-    if (world_rank != 0) {
-      MPI_Send(T[1], COLS+2, MPI_DOUBLE, up, 0, MPI_COMM_WORLD);
-    }
-    if (world_rank != (world_size-1)) {
-      MPI_Recv(T[local2global.size()+1], COLS+2, MPI_DOUBLE, down, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    if (world_size>1) {
+      //Downward
+      if (world_rank != (world_size-1)) {
+        MPI_Send(T[local2global.size()], COLS+2, MPI_DOUBLE, down, 0, MPI_COMM_WORLD);
+      }
+      if (world_rank != 0) {
+        MPI_Recv(T[0], COLS+2, MPI_DOUBLE, up, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      }
+      //Upwards
+      if (world_rank != 0) {
+        MPI_Send(T[1], COLS+2, MPI_DOUBLE, up, 0, MPI_COMM_WORLD);
+      }
+      if (world_rank != (world_size-1)) {
+        MPI_Recv(T[local2global.size()+1], COLS+2, MPI_DOUBLE, down, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      }
     }
 
     //COMPUTATION
     for (auto& rowMap: local2global) {
       locRow = rowMap.first;
-      glbRow = rowMap.first;
+      glbRow = rowMap.second;
       if ((glbRow == 0)||(glbRow == ROWS+1)) { continue; }// skip BC rows
       for (int j = 1; j <= COLS; j++){
         T[locRow][j] = 0.25 * (Tprev[locRow+1][j] + Tprev[locRow-1][j] + Tprev[locRow][j+1] + Tprev[locRow][j-1]);
