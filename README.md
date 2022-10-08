@@ -36,5 +36,5 @@ Up to 128 processors
 - [x] Parallelization game-plan
 - [ ] Write lighter vtk for visualization (_low priority_)
 - [x] Initial condition set correctly in //
-- [x] Fix bug final error seems to big (_high priority_)
+- [x] Fix bug final error seems too big (_high priority_)
 - [x] Write vtk for visualization (_high priority_)
