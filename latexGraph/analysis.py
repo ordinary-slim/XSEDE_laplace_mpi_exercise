@@ -21,7 +21,7 @@ plt_idx_minima.append( idx_minima[-2] )
 
 oneOverX = np.array( [(cputime[0] / (idx+1)) for idx in range( len(nprocs) ) ] )
 
-plt.figure( figsize=(8,6), dpi=300 )
+plt.figure( figsize=(8,6), dpi=250 )
 plt.scatter( nprocs, cputime, facecolors='none', edgecolors='darkslateblue', label='Execution time' )
 plt.plot( nprocs,  oneOverX, '--', color='darkolivegreen', label="$1/x$ scaling")
 plt.legend()
@@ -42,4 +42,4 @@ plt.ylabel( "CPU time [s]" )
 plt.rcParams["font.serif"] = "Times"
 
 # Save figure
-plt.savefig("strongScaling.png")
+plt.savefig("strongScaling.png", bbox_inches='tight')
